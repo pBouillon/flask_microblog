@@ -1,11 +1,14 @@
 from flask_wtf import FlaskForm
 
-from wtforms import StringField
+from wtforms import StringField, TextAreaField
 from wtforms import PasswordField
 from wtforms import BooleanField
 from wtforms import SubmitField
 
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired
+# noinspection PyProtectedMember
+from wtforms.validators import ValidationError
+from wtforms.validators import Length
 from wtforms.validators import EqualTo
 from wtforms.validators import Email
 
@@ -13,6 +16,7 @@ from app.models import User
 
 
 PASSWORD_MIN_LEN = 8
+PASSWORD_MAX_LEN = 64
 
 
 class LoginForm(FlaskForm):
@@ -35,11 +39,17 @@ class RegistrationForm(FlaskForm):
     )
     email = StringField(
         'Email',
-        validators=[DataRequired(), Email()]
+        validators=[
+            DataRequired(),
+            Email()
+        ]
     )
     password = PasswordField(
         'Password',
-        validators=[DataRequired()]
+        validators=[
+            DataRequired(),
+            Length(min=PASSWORD_MIN_LEN, max=PASSWORD_MAX_LEN)
+        ]
     )
     password2 = PasswordField(
         'Repeat Password',
@@ -50,6 +60,7 @@ class RegistrationForm(FlaskForm):
     )
     submit = SubmitField('Register')
 
+    # noinspection PyMethodMayBeStatic
     def validate_username(self, username) -> None:
         user = User.query.filter_by(
             username=username.data
@@ -58,6 +69,7 @@ class RegistrationForm(FlaskForm):
         if user is not None:
             raise ValidationError('Please use a different username.')
 
+    # noinspection PyMethodMayBeStatic
     def validate_email(self, email) -> None:
         # TODO implements check -> https://haveibeenpwned.com
         user = User.query.filter_by(
@@ -69,7 +81,17 @@ class RegistrationForm(FlaskForm):
 
     def validate_password(self, password) -> None:
         # TODO implements check -> https://haveibeenpwned.com
-        password_value = password.data
+        # password_value = password.dataeast 8 characters')
+        pass
 
-        if len(password_value) < PASSWORD_MIN_LEN:
-            raise ValidationError('Password must be at least 8 characters')
+
+class EditProfileForm(FlaskForm):
+    username = StringField(
+        'Username',
+        validators=[DataRequired()]
+    )
+    about_me = TextAreaField(
+        'About me',
+        validators=[Length(min=0, max=140)]
+    )
+    submit = SubmitField('Submit')
