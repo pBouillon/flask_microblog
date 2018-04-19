@@ -28,8 +28,14 @@ def before_request():
 
 
 @app.errorhandler(404)
-def page_not_found():
-    return 'Page not found !'
+def not_found_error():
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
 
 
 @app.route('/')
@@ -155,7 +161,7 @@ def user(username):
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.username)
 
     if form.validate_on_submit():
         current_user.username = form.username.data
