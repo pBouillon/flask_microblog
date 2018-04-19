@@ -104,3 +104,6 @@ ENV/
 *.iml
 *.xml
 __pycache__/
+
+# app
+*.db)
