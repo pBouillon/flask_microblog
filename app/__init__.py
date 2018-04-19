@@ -81,4 +81,3 @@ if not app.debug:
 
 from app import models
 from app import routes
-
