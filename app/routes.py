@@ -106,13 +106,36 @@ def login():
     )
 
     # redirect on previous page or on homepage
-    next_page = request.args.get('next')
+    page = request.args.get(
+        'page',
+        1,
+        type=int
+    )
 
-    if not next_page \
-            or url_parse(next_page).netloc != '':
-        next_page = url_for('index')
+    posts = current_user.followed_posts().paginate(
+        page,
+        app.config['POSTS_PER_PAGE'],
+        False
+    )
 
-    return redirect(next_page)
+    next_url = url_for(
+        'index',
+        page=posts.next_num
+    ) if posts.has_next else None
+
+    prev_url = url_for(
+        'index',
+        page=posts.prev_num
+    ) if posts.has_prev else None
+
+    return render_template(
+        'index.html',
+        title='Home',
+        form=form,
+        posts=posts.items,
+        next_url=next_url,
+        prev_url=prev_url
+    )
 
 
 @app.route('/logout')
@@ -154,25 +177,42 @@ def register():
 @app.route('/user/<username>')
 @login_required
 def user(username):
-    requested_user = User.query.filter_by(
+    usr = User.query.filter_by(
         username=username
     ).first_or_404()
 
-    posts = [
-        {
-            'author': requested_user,
-            'body': 'test post #1'
-        },
-        {
-            'author': requested_user,
-            'body': 'test post #2'
-        }
-    ]
+    page = request.args.get(
+        'page',
+        1,
+        type=int
+    )
+
+    posts = usr.posts.order_by(
+        Post.timestamp.desc()
+    ).paginate(
+        page,
+        app.config['POSTS_PER_PAGE'],
+        False
+    )
+
+    next_url = url_for(
+        'user',
+        username=usr.username,
+        page=posts.next_num
+    ) if posts.has_next else None
+
+    prev_url = url_for(
+        'user',
+        username=usr.username,
+        page=posts.prev_num
+    ) if posts.has_prev else None
 
     return render_template(
         'user.html',
-        user=requested_user,
-        posts=posts
+        user=usr,
+        posts=posts.items,
+        next_url=next_url,
+        prev_url=prev_url
     )
 
 
@@ -267,8 +307,20 @@ def explore():
         False
     )
 
+    next_url = url_for(
+        'explore',
+        page=posts.next_num
+    ) if posts.has_next else None
+
+    prev_url = url_for(
+        'explore',
+        page=posts.prev_num
+    ) if posts.has_prev else None
+
     return render_template(
         "index.html",
         title='Explore',
-        posts=posts.items
+        posts=posts.items,
+        next_url=next_url,
+        prev_url=prev_url
     )
