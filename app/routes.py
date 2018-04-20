@@ -27,11 +27,13 @@ def before_request():
         db.session.commit()
 
 
+# noinspection PyUnusedLocal
 @app.errorhandler(404)
-def not_found_error():
+def not_found_error(error):
     return render_template('404.html'), 404
 
 
+# noinspection PyUnusedLocal
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
@@ -72,19 +74,19 @@ def login():
         )
 
     # query the user
-    user = User.query.filter_by(
+    usr = User.query.filter_by(
         username=form.username.data
     ).first()
 
     # if credential doesn't match any user, redirect on login
-    if user is None \
-            or not user.check_password(form.password.data):
+    if usr is None \
+            or not usr.check_password(form.password.data):
         flash('Invalid username or password')
         return redirect(url_for('login'))
 
     # load the requested user
     login_user(
-        user,
+        usr,
         remember=form.remember_me.data
     )
 
@@ -104,6 +106,7 @@ def logout():
     return redirect(url_for('index'))
 
 
+# noinspection PyArgumentList
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     # redirect logged in users to home page
@@ -117,15 +120,15 @@ def register():
             title='Register',
             form=form
         )
-    user = User(
+    usr = User(
         username=form.username.data,
         email=form.email.data
     )
-    user.set_password(
+    usr.set_password(
         form.password.data
     )
 
-    db.session.add(user)
+    db.session.add(usr)
     db.session.commit()
 
     flash('registered successfully !')

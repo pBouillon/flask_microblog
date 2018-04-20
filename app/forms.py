@@ -110,3 +110,14 @@ class EditProfileForm(FlaskForm):
             ).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
+
+
+class PostForm(FlaskForm):
+    post = TextAreaField(
+        'What\'s in your mind ?',
+        validators=[
+            DataRequired(),
+            Length(min=1, max=140)
+        ]
+    )
+    submit = SubmitField('Submit')
