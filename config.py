@@ -8,9 +8,11 @@ basedir = path.abspath(
 
 
 class Config:
+    #
     # login
     SECRET_KEY = environ.get('SECRET_KEY') or 'super-secret_key'
 
+    #
     # database
     SQLALCHEMY_DATABASE_URI = environ.get('DATABASE_URL') or \
         'sqlite:///' + path.join(
@@ -20,6 +22,7 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    #
     # errors
     MAIL_SERVER = environ.get('MAIL_SERVER')
 
@@ -38,3 +41,6 @@ class Config:
         'your-email@example.com',
     ]
 
+    #
+    # pagination
+    POSTS_PER_PAGE = 3
