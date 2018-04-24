@@ -1,8 +1,10 @@
 import logging
 import os
-from logging.handlers import SMTPHandler, RotatingFileHandler
+from logging.handlers import SMTPHandler
+from logging.handlers import RotatingFileHandler
 
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +23,9 @@ login.login_view = 'login'
 # database
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+# Bootstrap
+bootstrap = Bootstrap(app)
 
 # errors
 if not app.debug:
