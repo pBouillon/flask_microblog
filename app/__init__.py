@@ -7,6 +7,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
@@ -26,6 +27,9 @@ migrate = Migrate(app, db)
 
 # Bootstrap
 bootstrap = Bootstrap(app)
+
+# Moment.js
+moment = Moment(app)
 
 # errors
 if not app.debug:
