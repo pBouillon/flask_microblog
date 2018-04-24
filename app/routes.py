@@ -10,7 +10,6 @@ from flask_login import current_user
 from flask_login import login_user
 from flask_login import logout_user
 from flask_login import login_required
-from werkzeug.urls import url_parse
 
 from app import app, db
 from app.forms import LoginForm
@@ -128,10 +127,10 @@ def login():
         page=posts.prev_num
     ) if posts.has_prev else None
 
+    # user redirected to home page
     return render_template(
         'index.html',
         title='Home',
-        form=form,
         posts=posts.items,
         next_url=next_url,
         prev_url=prev_url
